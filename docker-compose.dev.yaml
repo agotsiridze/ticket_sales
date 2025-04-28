@@ -9,6 +9,9 @@ services:
       - "8000"
     volumes:
       - ./backend:/src
+    tty: true
+    stdin_open: true
+    command: ["tail", "-f", "/dev/null"]
   db:
     image: postgres:latest
     environment:
