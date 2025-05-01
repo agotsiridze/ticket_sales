@@ -12,7 +12,7 @@ class EventsBase(BaseModel):
     is_active: bool = True
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EventCreate(EventsBase):
     created_by: UUID  # TODO: Change to current user ID

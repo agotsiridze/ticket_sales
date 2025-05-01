@@ -1,24 +1,51 @@
+from uuid import uuid4
+from datetime import datetime
+from contextlib import asynccontextmanager
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from utils import AsyncSessionLocal
 from models import User
 from schemas.users import UserCreate
-from uuid import uuid4
 
 class UserRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    def __init__(self, session_factory = AsyncSessionLocal):
+        self.session_factory = session_factory
+        
+    
+    @asynccontextmanager
+    async def session(self):
+        session = self.session_factory()
+        try:
+            yield session
+        finally:
+            await session.close()
+        
 
     async def create_user(self, user_data: UserCreate) -> User:
-        new_user = User(id=uuid4(), **user_data.model_dump())
-        self.session.add(new_user)
-        await self.session.commit()
-        await self.session.refresh(new_user)
-        return new_user
+        async with self.session() as session:
+            new_user = User(
+                id=uuid4(),
+                username=user_data.username,
+                email=user_data.email,
+                password_hash=user_data.password,  # temporarily store raw password
+                role=user_data.role,
+                created_at=datetime.now(),
+                is_active=True
+            )
+            session.add(new_user)
+            await session.commit()
+            await session.refresh(new_user)
+            return new_user
 
     async def get_user_by_id(self, user_id: str) -> User | None:
-        result = await self.session.execute(select(User).where(User.id == user_id))
-        return result.scalar_one_or_none()
+        async with self.session() as session:
+            result = await session.execute(select(User).where(User.id == user_id))
+            user = result.scalar_one()
+            return user
     
     async def get_all_users(self) -> list[User]:
-        result = await self.session.execute(select(User))
-        return result.scalars().all()
+        async with self.session() as session:
+            result = await session.execute(select(User))
+            return result.scalars().all()

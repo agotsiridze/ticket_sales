@@ -20,5 +20,5 @@ class User(Base):
     created_at = Column(TIMESTAMP, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     
-    created_events = relationship("Event", back_populates="creator", cascade="all, delete-orphan")
+    created_events = relationship("Event", back_populates="creator", lazy="selectin")
     tickets = relationship("Ticket", back_populates="owner")

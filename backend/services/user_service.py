@@ -1,10 +1,9 @@
 from repositories import UserRepository
 from schemas import UserCreate
-from sqlalchemy.ext.asyncio import AsyncSession
 
 class UserService:
-    def __init__(self, session: AsyncSession):
-        self.repo = UserRepository(session)
+    def __init__(self):
+        self.repo = UserRepository()
 
     async def create_user(self, user_data: UserCreate):
         return await self.repo.create_user(user_data)
