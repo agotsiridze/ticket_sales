@@ -39,7 +39,7 @@ class UserRepository:
             await session.refresh(new_user)
             return new_user
 
-    async def get_user_by_id(self, user_id: str) -> User | None:
+    async def get_user_by_id(self, user_id: str) -> User:
         async with self.session() as session:
             result = await session.execute(select(User).where(User.id == user_id))
             user = result.scalar_one()
