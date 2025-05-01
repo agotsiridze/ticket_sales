@@ -12,7 +12,7 @@ def get_env_variable(var_name):
         raise Exception(error_msg)
 
 
-# db_host = get_env_variable('POSTGRES_HOST')
+db_host = get_env_variable('POSTGRES_HOST')
 db_port = get_env_variable('POSTGRES_PORT')
 db_user = get_env_variable('POSTGRES_USER')
 db_password = get_env_variable('POSTGRES_PASSWORD')
@@ -22,7 +22,7 @@ DATABASE_URL = URL.create(
     "postgresql+asyncpg",
     username=db_user,
     password=db_password,
-    host="db",
+    host=db_host,
     port=db_port,
     database=db_name,
 )
