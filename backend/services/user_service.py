@@ -1,16 +1,37 @@
-from repositories import UserRepository
-from schemas import UserCreate
-from models import User
+from datetime import datetime
+from uuid import uuid4
 
-class UserService:
+from repositories import UserRepository
+from schemas import UserCreate, UserResponse
+from models import User
+from .base_service import ServiceBase
+
+
+class UserService(ServiceBase):
     def __init__(self):
         self.repo = UserRepository()
 
-    async def create_user(self, user_data: UserCreate) -> User:
-        return await self.repo.create_user(user_data)
+    async def create(self, user_data: UserCreate) -> UserResponse:
+        _id=uuid4()
+        new_user = User(
+            id=_id,
+            username=user_data.username,
+            email=user_data.email,
+            password_hash=user_data.password,  # temporarily store raw password
+            role=user_data.role,
+            created_at=datetime.now(),
+            is_active=True
+        )
+        valid_user = await self.repo.create(new_user)
+        created_user = UserResponse(valid_user)
+        return created_user
 
-    async def get_user(self, user_id: str) -> User:
-        return await self.repo.get_user_by_id(user_id)
+    async def read_by_id(self, user_id: str) -> UserResponse:
+        found_user = await self.repo.read_by_id(user_id)
+        response = UserResponse(**found_user._asdict())
+        return response
     
-    async def list_users(self) -> User:
-        return await self.repo.get_all_users()
+    async def read_all(self) -> list[UserResponse]:
+        users = await self.repo.read_all()
+        response = [UserResponse(**user._asdict()) for user in users]
+        return response
