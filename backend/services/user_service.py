@@ -4,10 +4,10 @@ from uuid import uuid4
 from repositories import UserRepository
 from schemas import UserCreate, UserResponse
 from models import User
-from .base_service import ServiceBase
+from .abstract_service import Services
 
 
-class UserService(ServiceBase):
+class UserService(Services):
     def __init__(self):
         self.repo = UserRepository()
 

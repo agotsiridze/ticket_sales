@@ -4,10 +4,10 @@ from uuid import uuid4
 from repositories import EventRepository
 from schemas import EventCreate, EventRead
 from models import Event
-from .base_service import ServiceBase
+from .abstract_service import Services
 
 
-class EventService(ServiceBase):
+class EventService(Services):
     def __init__(self):
         self.repo = EventRepository()
 

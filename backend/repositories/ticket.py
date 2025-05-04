@@ -2,10 +2,10 @@ from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
 from models import Ticket
-from .base_repository import RepositoryBase
+from .abstract_repository import Repositories
 
 
-class TicketRepository(RepositoryBase):
+class TicketRepository(Repositories):
     stmt = select(
                 Ticket.id,
                 Ticket.created_at,

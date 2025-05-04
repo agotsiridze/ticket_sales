@@ -3,11 +3,11 @@ from sqlalchemy.engine import Row
 
 from models import Event
 from schemas import EventCreate
-from .base_repository import RepositoryBase
+from .abstract_repository import Repositories
 
 
 
-class EventRepository(RepositoryBase):
+class EventRepository(Repositories):
     stmt = select(
             Event.id,
             Event.created_by,

@@ -4,10 +4,10 @@ from uuid import uuid4
 from repositories import TicketRepository
 from schemas import TicketCreate, TicketRead
 from models import Ticket
-from .base_service import ServiceBase
+from .abstract_service import Services
 
 
-class TicketService(ServiceBase):
+class TicketService(Services):
     def __init__(self):
         self.repo = TicketRepository()
 
