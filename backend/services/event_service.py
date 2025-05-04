@@ -22,7 +22,7 @@ class EventService(Services):
             end_datetime=event_data.end_datetime,
             is_ticket_available=event_data.is_ticket_available,
             created_by=event_data.created_by, #TODO: take user_id from token
-            created_at=event_data.created_at,
+            created_at=datetime.now(),
             is_active=event_data.is_active,
         )
         created_event = await self.repo.create(new_event)
