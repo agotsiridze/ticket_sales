@@ -23,7 +23,7 @@ class UserService(ServiceBase):
             is_active=True
         )
         valid_user = await self.repo.create(new_user)
-        created_user = UserResponse(valid_user)
+        created_user = UserResponse.model_validate(valid_user)
         return created_user
 
     async def read_by_id(self, user_id: str) -> UserResponse:

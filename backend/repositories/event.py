@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
@@ -32,11 +30,11 @@ class EventRepository(RepositoryBase):
     async def read_by_id(self, event_id: str) -> Row:
         stmt = self.stmt.where(Event.id == event_id)
         async with self.session() as session:
-            result = session.execute(stmt)
+            result = await session.execute(stmt)
             event = result.one()
             return event
     
     async def read_all(self) -> list[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
-            return result.scalars().all()
+            return result.all()

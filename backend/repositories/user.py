@@ -25,8 +25,6 @@ class UserRepository(RepositoryBase):
     async def read_by_id(self, user_id: str) -> Row:
         stmt = self.stmt.where(User.id == user_id)
         async with self.session() as session:
-            # result = await session.execute(select(User).where(User.id == user_id))
-            # user = result.scalar_one()
             result = await session.execute(stmt)
             row = result.one()
             
@@ -35,4 +33,4 @@ class UserRepository(RepositoryBase):
     async def read_all(self) -> list[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
-            return result.scalars().all()
+            return result.all()

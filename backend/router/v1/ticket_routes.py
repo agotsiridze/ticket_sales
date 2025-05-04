@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from schemas import TicketCreate, TicketRead
-from models import Ticket
 from controller import TicketController
 
 

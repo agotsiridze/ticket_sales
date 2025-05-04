@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from schemas import EventCreate, EventRead
-from models import Event
 from controller import EventController
 
 

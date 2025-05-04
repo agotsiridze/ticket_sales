@@ -16,7 +16,6 @@ class TicketService(ServiceBase):
         new_ticket = Ticket(
                 id=_id,
                 event_id=event_id,
-                owner_id=uuid4(), #TODO: get from user
                 price = ticket_data.price,
                 access_level= ticket_data.access_level,
                 seat=ticket_data.seat,
@@ -25,7 +24,7 @@ class TicketService(ServiceBase):
                 expiry_datetime = ticket_data.expiry_datetime,
             )
         valid_ticket = await self.repo.create(new_ticket)
-        created_ticket = TicketRead(valid_ticket)
+        created_ticket = TicketRead.model_validate(valid_ticket)
         return created_ticket
 
     async def read_by_id(self, ticket_id: str) -> TicketRead:

@@ -21,11 +21,12 @@ class EventService(ServiceBase):
             start_datetime=event_data.start_datetime,
             end_datetime=event_data.end_datetime,
             is_ticket_available=event_data.is_ticket_available,
-            created_by=uuid4(), #TODO: take user_id from token
+            created_by=event_data.created_by, #TODO: take user_id from token
+            created_at=event_data.created_at,
             is_active=event_data.is_active,
         )
         created_event = await self.repo.create(new_event)
-        valid_event = EventRead(created_event)
+        valid_event = EventRead.model_validate(created_event)
         return valid_event
 
     async def read_by_id(self, event_id: str) -> EventRead:

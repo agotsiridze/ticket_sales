@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
 from schemas import UserCreate, UserResponse
-from models import User
 from controller import UserController
 
 

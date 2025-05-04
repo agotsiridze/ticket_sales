@@ -8,9 +8,6 @@ from models import TicketStatus
 
 
 class TicketBase(BaseModel):
-    event_id: UUID
-    owner_id: UUID | None = None
-    status: TicketStatus = TicketStatus.available
     price: int
 
     access_level: str | None = None
@@ -27,5 +24,8 @@ class TicketCreate(TicketBase):
 
 
 class TicketRead(TicketBase):
+    status: TicketStatus = TicketStatus.available
+    owner_id: UUID | None = None
+    event_id: UUID
     id: UUID
     created_at: datetime

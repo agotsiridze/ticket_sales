@@ -38,4 +38,4 @@ class TicketRepository(RepositoryBase):
     async def read_all(self) -> list[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
-            return result.scalars().all()
+            return result.all()

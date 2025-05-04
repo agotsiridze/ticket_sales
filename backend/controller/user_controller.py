@@ -9,14 +9,14 @@ class UserController:
         self.service = UserService()
 
     async def create_user(self, user: UserCreate) -> User:
-        return await self.service.create_user(user)
+        return await self.service.create(user)
 
     async def get_user(self, user_id: str) -> User:
-        user = await self.service.get_user(user_id)
+        user = await self.service.read_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return user
 
     async def list_users(self) -> list[User]:
-        return await self.service.list_users()
+        return await self.service.read_all()
 
