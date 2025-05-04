@@ -17,6 +17,6 @@ class UserController:
             raise HTTPException(status_code=404, detail="User not found")
         return user
 
-    async def list_users(self) -> list[User]:
+    async def read_all(self) -> list[User]:
         return await self.service.read_all()
 

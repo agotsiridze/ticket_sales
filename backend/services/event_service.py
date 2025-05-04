@@ -4,10 +4,10 @@ from uuid import uuid4
 from repositories import EventRepository
 from schemas import EventCreate, EventRead
 from models import Event
-from .base_service import ServiceBase
+from .abstract_service import Services
 
 
-class EventService(ServiceBase):
+class EventService(Services):
     def __init__(self):
         self.repo = EventRepository()
 
@@ -22,7 +22,7 @@ class EventService(ServiceBase):
             end_datetime=event_data.end_datetime,
             is_ticket_available=event_data.is_ticket_available,
             created_by=event_data.created_by, #TODO: take user_id from token
-            created_at=event_data.created_at,
+            created_at=datetime.now(),
             is_active=event_data.is_active,
         )
         created_event = await self.repo.create(new_event)

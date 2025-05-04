@@ -1,10 +1,12 @@
 from fastapi import HTTPException
+
 from schemas import EventCreate
 from services import EventService
 from models import Event
+from .abstract_controller import Controller
 
 
-class EventController:
+class EventController(Controller):
     def __init__(self):
         self.service = EventService()
 

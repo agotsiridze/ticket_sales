@@ -2,10 +2,10 @@ from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
 from models import User
-from .base_repository import RepositoryBase
+from .abstract_repository import Repositories
 
 
-class UserRepository(RepositoryBase):
+class UserRepository(Repositories):
     stmt = select(
                 User.id,
                 User.username,

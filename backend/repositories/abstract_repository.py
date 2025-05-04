@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from utils import AsyncSessionLocal
 
-class RepositoryBase(ABC):
+class Repositories(ABC):
     def __init__(self, session_factory = AsyncSessionLocal):
         self.session_factory = session_factory
         
