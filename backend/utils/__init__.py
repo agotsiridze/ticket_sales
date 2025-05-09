@@ -1,1 +1,1 @@
-from .db_session import AsyncSessionLocal
+from .db_session import AsyncSessionLocal, DATABASE_URL
