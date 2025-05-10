@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from .base import Base
-from .enums import UserRole
+from enums import UserRole
 
 
 class User(Base):
