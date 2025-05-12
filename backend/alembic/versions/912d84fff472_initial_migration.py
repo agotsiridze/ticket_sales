@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -26,7 +27,7 @@ def upgrade() -> None:
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.Text(), nullable=False),
     sa.Column('password_hash', sa.Text(), nullable=False),
-    sa.Column('role', sa.Enum('organizer', 'client', name='userrole'), nullable=False),
+    sa.Column('role', postgresql.ENUM('organizer', 'client', name='userrole'), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -60,7 +61,7 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('event_id', sa.UUID(), nullable=False),
     sa.Column('owner_id', sa.UUID(), nullable=True),
-    sa.Column('status', sa.Enum('available', 'reserved', 'paid', name='ticketstatus'), nullable=False),
+    sa.Column('status', postgresql.ENUM('available', 'reserved', 'paid', name='ticketstatus'), nullable=False),
     sa.Column('price', sa.Integer(), nullable=False),
     sa.Column('access_level', sa.String(), nullable=True),
     sa.Column('seat', sa.String(), nullable=True),
