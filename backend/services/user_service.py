@@ -1,13 +1,16 @@
 from datetime import datetime
 from uuid import uuid4
 
+from .abstract_service import Services
+from .password_hash import BCryptPasswordEncode
 from repositories import UserRepository
+from schemas import auth
 from schemas import UserCreate, UserResponse
 from models import User
-from .abstract_service import Services
 
 
 class UserService(Services):
+    encoder = BCryptPasswordEncode()
     def __init__(self):
         self.repo = UserRepository()
 
@@ -17,7 +20,7 @@ class UserService(Services):
             id=_id,
             username=user_data.username,
             email=user_data.email,
-            password_hash=user_data.password,  # temporarily store raw password
+            password_hash=self.encoder.hash_password(user_data.password),  # hash the password
             role=user_data.role,
             created_at=datetime.now(),
             is_active=True
@@ -29,6 +32,11 @@ class UserService(Services):
     async def read_by_id(self, user_id: str) -> UserResponse:
         found_user = await self.repo.read_by_id(user_id)
         response = UserResponse(**found_user._asdict())
+        return response
+
+    async def read_by_username(self, username: str) -> auth.UserInDB:
+        found_user = await self.repo.read_by_username(username)
+        response = auth.UserInDB(**found_user._asdict())
         return response
     
     async def read_all(self) -> list[UserResponse]:

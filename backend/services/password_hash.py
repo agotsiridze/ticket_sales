@@ -1,0 +1,24 @@
+from abc import ABC, abstractmethod
+from passlib.context import CryptContext
+
+
+class PasswordEncode(ABC):
+    @abstractmethod
+    def hash_password(self, password: str) -> str:
+        raise NotImplementedError("Method must be implemented in subclass!")
+
+    @abstractmethod
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        raise NotImplementedError("Method must be implemented in subclass!")
+
+
+
+class BCryptPasswordEncode(PasswordEncode):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    
+    def hash_password(self, password: str) -> str:
+        return self.pwd_context.hash(password)
+    
+    
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        return self.pwd_context.verify(plain_password, hashed_password)
