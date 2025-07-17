@@ -8,10 +8,9 @@ from schemas import auth
 
 class CurrentUser:
     user_service = UserService()
-    def __init__(self, token: str = Depends(auth_config.oauth2_scheme)):
+    def __init__(self, token:str):
         self.token = token
         
-
     async def get_current_user(self) -> auth.UserInDB:
         token_service = TokenService()
         payload = token_service.decode_token(self.token)
