@@ -7,7 +7,7 @@ from controller import create_token, authenticate_user
 from schemas import auth
 
 
-router = APIRouter(prefix="/temp", tags=["temp"])
+router = APIRouter(prefix="/authorization", tags=["authorization"])
 
 
 @router.post("/token")
@@ -19,7 +19,7 @@ async def login_for_access_token(
 
 
 
-@router.get("/users/me/", response_model=auth.User)
+@router.get("/me/", response_model=auth.User)
 async def read_users_me(
     current_user: Annotated[auth.User, Depends(authenticate_user)],
 ):
