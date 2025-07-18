@@ -3,6 +3,7 @@ from sqlalchemy.engine import Row
 
 from models import User
 from .abstract_repository import Repositories
+from schemas import auth
 
 
 class UserRepository(Repositories):
@@ -14,6 +15,12 @@ class UserRepository(Repositories):
                 User.created_at,
                 User.is_active
             )
+    auth_stmt = select(
+                User.username,
+                User.email,
+                User.is_active,
+                User.password_hash,
+            )
     
     async def create(self, new_user: User) -> User:
         async with self.session() as session:
@@ -24,6 +31,14 @@ class UserRepository(Repositories):
 
     async def read_by_id(self, user_id: str) -> Row:
         stmt = self.stmt.where(User.id == user_id)
+        async with self.session() as session:
+            result = await session.execute(stmt)
+            row = result.one()
+            
+            return row
+
+    async def read_by_username(self, username: str) -> Row:
+        stmt = self.auth_stmt.where(User.username == username)
         async with self.session() as session:
             result = await session.execute(stmt)
             row = result.one()
