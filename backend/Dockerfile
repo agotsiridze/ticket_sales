@@ -7,6 +7,7 @@ RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN rm requirements.txt
+RUN alembic upgrade head
 
 EXPOSE 8000
 
