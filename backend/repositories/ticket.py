@@ -1,8 +1,9 @@
 from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
-from models import Ticket
+from models import Ticket, User
 from .abstract_repository import Repositories
+
 
 
 class TicketRepository(Repositories):
@@ -28,6 +29,13 @@ class TicketRepository(Repositories):
             await session.refresh(ticket_data)
             return ticket_data
 
+    async def create_many(self, tickets_data: list[Ticket]) -> Ticket:
+        async with self.session() as session:
+            session.add(tickets_data)
+            await session.commit()
+            await session.refresh(tickets_data)
+            return tickets_data
+
     async def read_by_id(self, event_id: str) -> Row:
         stmt = self.stmt.where(Ticket.id == event_id)
         async with self.session() as session:
@@ -39,3 +47,13 @@ class TicketRepository(Repositories):
         async with self.session() as session:
             result = await session.execute(self.stmt)
             return result.all()
+    
+    async def update_owner(self, ticket_id: str, owner: User) -> Ticket:
+        async with self.session() as session:
+            stmt = select(Ticket).where(Ticket.id == ticket_id).with_for_update()
+            result = await session.execute(stmt)
+            ticket = result.scalar_one()
+            ticket.owner = owner
+            await session.commit()
+            await session.refresh(ticket)
+            return ticket
