@@ -1,9 +1,9 @@
+from typing import Sequence
 from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
 from models import User
 from .abstract_repository import Repositories
-from schemas import auth
 
 
 class UserRepository(Repositories):
@@ -14,12 +14,6 @@ class UserRepository(Repositories):
                 User.role,
                 User.created_at,
                 User.is_active
-            )
-    auth_stmt = select(
-                User.username,
-                User.email,
-                User.is_active,
-                User.password_hash,
             )
     
     async def create(self, new_user: User) -> User:
@@ -38,14 +32,14 @@ class UserRepository(Repositories):
             return row
 
     async def read_by_username(self, username: str) -> Row:
-        stmt = self.auth_stmt.where(User.username == username)
+        stmt = self.stmt.where(User.username == username)
         async with self.session() as session:
             result = await session.execute(stmt)
             row = result.one()
-            
             return row
     
-    async def read_all(self) -> list[Row]:
+    async def read_all(self) -> Sequence[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
-            return result.all()
+            rows = result.all()
+            return rows

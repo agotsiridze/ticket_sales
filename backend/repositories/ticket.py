@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from sqlalchemy.future import select
 from sqlalchemy.engine import Row
 
@@ -29,7 +31,7 @@ class TicketRepository(Repositories):
             await session.refresh(ticket_data)
             return ticket_data
 
-    async def create_many(self, tickets_data: list[Ticket]) -> Ticket:
+    async def create_many(self, tickets_data: list[Ticket]) -> list[Ticket]:
         async with self.session() as session:
             session.add(tickets_data)
             await session.commit()
@@ -37,15 +39,22 @@ class TicketRepository(Repositories):
             return tickets_data
 
     async def read_by_id(self, event_id: str) -> Row:
-        stmt = self.stmt.where(Ticket.id == event_id)
+        stmt_updated = self.stmt.where(Ticket.id == event_id)
         async with self.session() as session:
-            result = await session.execute(stmt)
+            result = await session.execute(stmt_updated)
             user = result.one()
             return user
     
-    async def read_all(self) -> list[Row]:
+    async def read_all(self) -> Sequence[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
+            return result.all()
+
+
+    async def read_by_event(self, event_id: str) -> Sequence[Row]:
+        stmt = self.stmt.where(Ticket.event_id == event_id)
+        async with self.session() as session:
+            result = await session.execute(stmt)
             return result.all()
     
     async def update_owner(self, ticket_id: str, owner: User) -> Ticket:

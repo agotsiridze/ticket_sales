@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
+from typing import AsyncIterator
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from utils import AsyncSessionLocal
 
@@ -9,8 +12,8 @@ class Repositories(ABC):
         
 
     @asynccontextmanager
-    async def session(self):
-        session = self.session_factory()
+    async def session(self)  -> AsyncIterator[AsyncSession]:
+        session: AsyncSession = self.session_factory()
         try:
             yield session
         finally:

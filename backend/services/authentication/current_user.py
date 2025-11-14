@@ -1,5 +1,3 @@
-from fastapi import Depends
-
 from .auth_config import auth_config
 from .tokenization import TokenService
 from services import UserService
