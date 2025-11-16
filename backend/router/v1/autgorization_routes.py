@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from controller import create_token, authenticate_user
 from schemas import auth
+from models import User
 
 
 router = APIRouter(prefix="/authorization", tags=["authorization"])
@@ -21,7 +22,7 @@ async def login_for_access_token(
 
 @router.get("/me/", response_model=auth.User)
 async def read_users_me(
-    current_user: Annotated[auth.User, Depends(authenticate_user)],
+    current_user: Annotated[User, Depends(authenticate_user)],
 ):
     return current_user
 

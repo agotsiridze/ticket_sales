@@ -11,7 +11,7 @@ class TicketService(Services):
     def __init__(self):
         self.repo = TicketRepository()
 
-    async def create(self, ticket_data: TicketCreate, event_id) -> Ticket:
+    async def create(self, ticket_data: TicketCreate, event_id) -> TicketRead:
         _id = uuid4()
         new_ticket = Ticket(
                 id=_id,
@@ -32,7 +32,7 @@ class TicketService(Services):
         ticket_res = TicketRead(**ticket_row._asdict())
         return ticket_res
     
-    async def read_all(self) -> list[Ticket]:
+    async def read_all(self) -> list[TicketRead]:
         tickets = await self.repo.read_all()
         response = [TicketRead(**ticket._asdict()) for ticket in tickets]
         return response

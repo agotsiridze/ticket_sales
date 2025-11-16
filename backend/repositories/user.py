@@ -31,11 +31,11 @@ class UserRepository(Repositories):
             
             return row
 
-    async def read_by_username(self, username: str) -> Row:
-        stmt = self.stmt.where(User.username == username)
+    async def read_by_username(self, username: str) -> User:
+        stmt = select(User).where(User.username == username)
         async with self.session() as session:
             result = await session.execute(stmt)
-            row = result.one()
+            row = result.scalar_one()
             return row
     
     async def read_all(self) -> Sequence[Row]:

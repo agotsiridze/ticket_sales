@@ -62,7 +62,8 @@ class TicketRepository(Repositories):
             stmt = select(Ticket).where(Ticket.id == ticket_id).with_for_update()
             result = await session.execute(stmt)
             ticket = result.scalar_one()
-            ticket.owner = owner
+            owner_in_session = await session.merge(owner)
+            ticket.owner = owner_in_session
             await session.commit()
             await session.refresh(ticket)
             return ticket

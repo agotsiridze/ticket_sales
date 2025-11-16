@@ -34,10 +34,9 @@ class UserService(Services):
         response = UserResponse(**found_user._asdict())
         return response
 
-    async def read_by_username(self, username: str) -> auth.UserInDB:
+    async def read_by_username(self, username: str) -> User:
         found_user = await self.repo.read_by_username(username)
-        response = auth.UserInDB(**found_user._asdict())
-        return response
+        return found_user
     
     async def read_all(self) -> list[UserResponse]:
         users = await self.repo.read_all()
