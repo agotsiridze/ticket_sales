@@ -1,8 +1,12 @@
-from sqlalchemy.future import select
+from typing import Sequence
+
+from sqlalchemy import update, select
 from sqlalchemy.engine import Row
 
-from models import Ticket
+from models import Ticket, User
 from .abstract_repository import Repositories
+from enums import TicketStatus
+
 
 
 class TicketRepository(Repositories):
@@ -28,14 +32,56 @@ class TicketRepository(Repositories):
             await session.refresh(ticket_data)
             return ticket_data
 
-    async def read_by_id(self, event_id: str) -> Row:
-        stmt = self.stmt.where(Ticket.id == event_id)
+    async def create_many(self, tickets_data: list[Ticket]) -> list[Ticket]:
         async with self.session() as session:
-            result = await session.execute(stmt)
+            session.add(tickets_data)
+            await session.commit()
+            await session.refresh(tickets_data)
+            return tickets_data
+
+    async def read_by_id(self, event_id: str) -> Row:
+        stmt_updated = self.stmt.where(Ticket.id == event_id)
+        async with self.session() as session:
+            result = await session.execute(stmt_updated)
             user = result.one()
             return user
     
-    async def read_all(self) -> list[Row]:
+    async def read_all(self) -> Sequence[Row]:
         async with self.session() as session:
             result = await session.execute(self.stmt)
             return result.all()
+
+
+    async def read_by_event(self, event_id: str) -> Sequence[Row]:
+        stmt = self.stmt.where(Ticket.event_id == event_id)
+        async with self.session() as session:
+            result = await session.execute(stmt)
+            return result.all()
+    
+    
+    async def update_owner(self, ticket_id: str, owner: User) -> Ticket:
+        async with self.session() as session:
+            
+            stmt = (
+                update(Ticket)
+                .where(
+                    Ticket.id == ticket_id,
+                    Ticket.status == TicketStatus.available,
+                    Ticket.owner_id.is_(None)
+                )
+                .values(
+                    status=TicketStatus.reserved,
+                    owner_id=owner.id 
+                )
+                .returning(Ticket) 
+            )
+            
+            result = await session.execute(stmt)
+            
+            try:
+                ticket = result.scalar_one() 
+            except Exception:
+                raise ValueError(f"Ticket ID {ticket_id} not found or not available.")
+
+            await session.commit()
+            return ticket

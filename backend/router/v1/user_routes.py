@@ -20,6 +20,6 @@ async def extract_user(user_id: str)-> UserResponse:
     return user
 
 @router.get("", response_model=list[UserResponse])
-async def get_all_users() -> UserResponse:
+async def get_all_users() -> list[UserResponse]:
     users = await controller.read_all()
     return users

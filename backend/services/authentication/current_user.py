@@ -1,9 +1,8 @@
-from fastapi import Depends
-
 from .auth_config import auth_config
 from .tokenization import TokenService
 from services import UserService
 from schemas import auth
+from models import User
 
 
 class CurrentUser:
@@ -11,7 +10,7 @@ class CurrentUser:
     def __init__(self, token:str):
         self.token = token
         
-    async def get_current_user(self) -> auth.UserInDB:
+    async def get_current_user(self) -> User:
         token_service = TokenService()
         payload = token_service.decode_token(self.token)
         username = payload.get("sub")

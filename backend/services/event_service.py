@@ -33,6 +33,11 @@ class EventService(Services):
         event = await self.repo.read_by_id(event_id)
         response = EventRead(**event._asdict())
         return response
+
+    async def read_by_owner(self, owner_id: str) -> list[EventRead]:
+        events = await self.repo.read_by_owner(owner_id)
+        response = [EventRead(**event._asdict()) for event in events]
+        return response
     
     async def read_all(self) -> list[EventRead]:
         events = await self.repo.read_all()
