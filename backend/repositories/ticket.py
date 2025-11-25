@@ -1,10 +1,11 @@
 from typing import Sequence
 
-from sqlalchemy.future import select
+from sqlalchemy import update, select
 from sqlalchemy.engine import Row
 
 from models import Ticket, User
 from .abstract_repository import Repositories
+from enums import TicketStatus
 
 
 
@@ -57,13 +58,30 @@ class TicketRepository(Repositories):
             result = await session.execute(stmt)
             return result.all()
     
+    
     async def update_owner(self, ticket_id: str, owner: User) -> Ticket:
         async with self.session() as session:
-            stmt = select(Ticket).where(Ticket.id == ticket_id).with_for_update()
+            
+            stmt = (
+                update(Ticket)
+                .where(
+                    Ticket.id == ticket_id,
+                    Ticket.status == TicketStatus.available,
+                    Ticket.owner_id.is_(None)
+                )
+                .values(
+                    status=TicketStatus.reserved,
+                    owner_id=owner.id 
+                )
+                .returning(Ticket) 
+            )
+            
             result = await session.execute(stmt)
-            ticket = result.scalar_one()
-            owner_in_session = await session.merge(owner)
-            ticket.owner = owner_in_session
+            
+            try:
+                ticket = result.scalar_one() 
+            except Exception:
+                raise ValueError(f"Ticket ID {ticket_id} not found or not available.")
+
             await session.commit()
-            await session.refresh(ticket)
             return ticket

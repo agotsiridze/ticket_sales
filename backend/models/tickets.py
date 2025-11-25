@@ -10,7 +10,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .base import Base
 from enums import TicketStatus
@@ -40,7 +40,7 @@ class Ticket(Base):
         nullable=True
     )
 
-    status = Column(Enum(TicketStatus, name="ticketstatus"), nullable=False, default=TicketStatus.available)
+    status:Mapped[TicketStatus] = mapped_column(Enum(TicketStatus, name="ticketstatus"), nullable=False, default=TicketStatus.available)
 
     price = Column(Integer, nullable=False)
     access_level = Column(String, nullable=True)
