@@ -1,23 +1,11 @@
 from abc import ABC, abstractmethod
-from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from utils import AsyncSessionLocal
+from utils import AsyncSessionLocal, UnitOfWork
 
 class Repositories(ABC):
     def __init__(self, session_factory = AsyncSessionLocal):
-        self.session_factory = session_factory
-        
+        self.uow = UnitOfWork(session_factory)
 
-    @asynccontextmanager
-    async def session(self)  -> AsyncIterator[AsyncSession]:
-        session: AsyncSession = self.session_factory()
-        try:
-            yield session
-        finally:
-            await session.close()
         
     @abstractmethod
     async def create(self,):

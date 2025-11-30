@@ -23,7 +23,7 @@ class EventRepository(Repositories):
             Event.is_active,
         )
     async def create(self, new_event: EventCreate) -> EventCreate:
-        async with self.session() as session:
+        async with self.uow as session:
             session.add(new_event)
             await session.commit()
             await session.refresh(new_event)
@@ -31,19 +31,19 @@ class EventRepository(Repositories):
 
     async def read_by_id(self, event_id: str) -> Row:
         stmt = self.stmt.where(Event.id == event_id)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt)
             event = result.one()
             return event
 
     async def read_by_owner(self, owner_id: str) -> Sequence[Row]:
         stmt = self.stmt.where(Event.created_by == owner_id)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt)
             event = result.all()
             return event
     
     async def read_all(self) -> Sequence[Row]:
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(self.stmt)
             return result.all()

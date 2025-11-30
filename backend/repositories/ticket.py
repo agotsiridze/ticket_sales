@@ -26,14 +26,14 @@ class TicketRepository(Repositories):
 
     
     async def create(self, ticket_data: Ticket) -> Ticket:
-        async with self.session() as session:
+        async with self.uow as session:
             session.add(ticket_data)
             await session.commit()
             await session.refresh(ticket_data)
             return ticket_data
 
     async def create_many(self, tickets_data: list[Ticket]) -> list[Ticket]:
-        async with self.session() as session:
+        async with self.uow as session:
             session.add(tickets_data)
             await session.commit()
             await session.refresh(tickets_data)
@@ -41,26 +41,26 @@ class TicketRepository(Repositories):
 
     async def read_by_id(self, event_id: str) -> Row:
         stmt_updated = self.stmt.where(Ticket.id == event_id)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt_updated)
             user = result.one()
             return user
     
     async def read_all(self) -> Sequence[Row]:
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(self.stmt)
             return result.all()
 
 
     async def read_by_event(self, event_id: str) -> Sequence[Row]:
         stmt = self.stmt.where(Ticket.event_id == event_id)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt)
             return result.all()
     
     
     async def update_owner(self, ticket_id: str, owner: User) -> Ticket:
-        async with self.session() as session:
+        async with self.uow as session:
             
             stmt = (
                 update(Ticket)

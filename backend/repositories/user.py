@@ -17,7 +17,7 @@ class UserRepository(Repositories):
             )
     
     async def create(self, new_user: User) -> User:
-        async with self.session() as session:
+        async with self.uow as session:
             session.add(new_user)
             await session.commit()
             await session.refresh(new_user)
@@ -25,7 +25,7 @@ class UserRepository(Repositories):
 
     async def read_by_id(self, user_id: str) -> Row:
         stmt = self.stmt.where(User.id == user_id)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt)
             row = result.one()
             
@@ -33,13 +33,13 @@ class UserRepository(Repositories):
 
     async def read_by_username(self, username: str) -> User:
         stmt = select(User).where(User.username == username)
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(stmt)
             row = result.scalar_one()
             return row
     
     async def read_all(self) -> Sequence[Row]:
-        async with self.session() as session:
+        async with self.uow as session:
             result = await session.execute(self.stmt)
             rows = result.all()
             return rows
