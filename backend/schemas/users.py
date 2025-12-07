@@ -4,11 +4,10 @@ from datetime import datetime
 from enums import UserRole
 
 
-
 class UserBase(BaseModel):
     username: str = Field(
-        ..., 
-        min_length=3, 
+        ...,
+        min_length=3,
         max_length=50,
         description="Unique username of the user",
         examples=["john_doe"],
@@ -20,13 +19,13 @@ class UserBase(BaseModel):
     )
     role: UserRole = Field(
         UserRole.client,
-        description="Role of the user. Must be one of: " + ", ".join([f"'{item.value}'" for item in UserRole]),
+        description="Role of the user. Must be one of: "
+        + ", ".join([f"'{item.value}'" for item in UserRole]),
         examples=[UserRole.client],
     )
-    
+
     class Config:
         from_attributes = True
-
 
 
 class UserCreate(UserBase):
@@ -57,3 +56,16 @@ class UserResponse(UserBase):
     )
 
 
+class UserFilter(BaseModel):
+    """Query parameters for filtering users"""
+
+    username: str | None = Field(
+        None,
+        description="Filter by username (partial match)",
+        examples=["john"],
+    )
+    email: str | None = Field(
+        None,
+        description="Filter by email (partial match)",
+        examples=["sample@"],
+    )

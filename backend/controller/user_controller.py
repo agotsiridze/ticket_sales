@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from schemas import UserCreate
+from schemas import UserCreate, UserFilter, UserResponse
 from services import UserService
 from models import User
 
@@ -17,6 +17,5 @@ class UserController:
             raise HTTPException(status_code=404, detail="User not found")
         return user
 
-    async def read_all(self) -> list[User]:
-        return await self.service.read_all()
-
+    async def read_many(self, filters: UserFilter) -> list[UserResponse]:
+        return await self.service.read_many(filters)
