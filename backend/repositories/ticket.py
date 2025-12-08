@@ -8,23 +8,21 @@ from .abstract_repository import Repositories
 from enums import TicketStatus
 
 
-
 class TicketRepository(Repositories):
     stmt = select(
-                Ticket.id,
-                Ticket.created_at,
-                Ticket.event_id,
-                Ticket.owner_id,
-                Ticket.created_at,
-                Ticket.status,
-                Ticket.price,
-                Ticket.access_level,
-                Ticket.seat,
-                Ticket.room,
-                Ticket.expiry_datetime,
-            )
+        Ticket.id,
+        Ticket.created_at,
+        Ticket.event_id,
+        Ticket.owner_id,
+        Ticket.created_at,
+        Ticket.status,
+        Ticket.price,
+        Ticket.access_level,
+        Ticket.seat,
+        Ticket.room,
+        Ticket.expiry_datetime,
+    )
 
-    
     async def create(self, ticket_data: Ticket) -> Ticket:
         async with self.uow as session:
             session.add(ticket_data)
@@ -45,41 +43,36 @@ class TicketRepository(Repositories):
             result = await session.execute(stmt_updated)
             user = result.one()
             return user
-    
+
     async def read_all(self) -> Sequence[Row]:
         async with self.uow as session:
             result = await session.execute(self.stmt)
             return result.all()
-
 
     async def read_by_event(self, event_id: str) -> Sequence[Row]:
         stmt = self.stmt.where(Ticket.event_id == event_id)
         async with self.uow as session:
             result = await session.execute(stmt)
             return result.all()
-    
-    
+
     async def update_owner(self, ticket_id: str, owner: User) -> Ticket:
         async with self.uow as session:
-            
+
             stmt = (
                 update(Ticket)
                 .where(
                     Ticket.id == ticket_id,
                     Ticket.status == TicketStatus.available,
-                    Ticket.owner_id.is_(None)
+                    Ticket.owner_id.is_(None),
                 )
-                .values(
-                    status=TicketStatus.reserved,
-                    owner_id=owner.id 
-                )
-                .returning(Ticket) 
+                .values(status=TicketStatus.reserved, owner_id=owner.id)
+                .returning(Ticket)
             )
-            
+
             result = await session.execute(stmt)
-            
+
             try:
-                ticket = result.scalar_one() 
+                ticket = result.scalar_one()
             except Exception:
                 raise ValueError(f"Ticket ID {ticket_id} not found or not available.")
 
