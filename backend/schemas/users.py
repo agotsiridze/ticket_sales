@@ -69,3 +69,23 @@ class UserFilter(BaseModel):
         description="Filter by email (partial match)",
         examples=["sample@"],
     )
+
+
+class UserUpdate(BaseModel):
+    """Query parameters for updating user information"""
+    email: EmailStr | None = Field(
+        None,
+        description="update email",
+        examples=["sample@"],
+    )
+    role: UserRole | None = Field(
+        None,
+        description="Role of the user. Must be one of: "
+        + ", ".join([f"'{item.value}'" for item in UserRole]),
+        examples=[UserRole.client],
+    )
+    is_active: bool | None = Field(
+        True,
+        description="Indicates if the user is active",
+        examples=[True],
+    )

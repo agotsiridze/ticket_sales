@@ -4,7 +4,7 @@ from uuid import UUID
 from datetime import datetime
 
 from models import User
-from schemas import UserFilter
+from schemas import UserFilter, UserUpdate
 from repositories.abstract_repository import Repository
 from .stmt_generator import UserSTMTGenerator
 
@@ -19,7 +19,7 @@ class UserRepository(Repository):
             await session.refresh(new_user)
             return new_user
 
-    async def read(self, user_id: str) -> Row[tuple[UUID, str, str, str, datetime, bool]]:
+    async def read(self, user_id: UUID) -> Row[tuple[UUID, str, str, str, datetime, bool]]:
         stmt = self.stmt.read_by_id(user_id)
         async with self.uow as session:
             result = await session.execute(stmt)
@@ -33,10 +33,15 @@ class UserRepository(Repository):
             rows = result.all()
             return rows
 
-    async def update(self) -> None:
-        pass  # TODO: update user details
+    async def update(self, user_id: UUID, user_update: UserUpdate) -> Row[tuple[UUID, str, str, str, datetime, bool]]:
+        stmt = self.stmt.update(user_id, user_update)
+        async with self.uow as session:
+            result = await session.execute(stmt)
+            result = result.one()
+            await session.commit()
+            return result
 
-    async def delete(self, user_id: str) -> None:
+    async def delete(self, user_id: UUID) -> None:
         stmt = self.stmt.delete(user_id)
         async with self.uow as session:
             result = await session.execute(stmt)

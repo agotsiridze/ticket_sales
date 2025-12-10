@@ -1,19 +1,17 @@
 from datetime import datetime
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 
-from .abstract_service import Services
 from .password_hash import BCryptPasswordEncode
 from repositories import UserRepository
-from schemas import auth
-from schemas import UserCreate, UserResponse, UserFilter
+from schemas import UserCreate, UserResponse, UserFilter, UserUpdate
 from models import User
 
 
-class UserService(Services):
+class UserService:#temp - removed base class
     encoder = BCryptPasswordEncode()
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.repo = UserRepository()
 
     async def create(self, user_data: UserCreate) -> UserResponse:
@@ -33,16 +31,22 @@ class UserService(Services):
         created_user = UserResponse.model_validate(valid_user)
         return created_user
 
-    async def read_by_id(self, user_id: str) -> UserResponse:
-        found_user = await self.repo.read_by_id(user_id)
-        response = UserResponse(**found_user._asdict())
+
+    async def read(self, user_id: UUID) -> UserResponse:
+        found_user = await self.repo.read(user_id)
+        response = UserResponse(**dict(found_user))
         return response
 
-    async def read_by_username(self, username: str) -> User:
-        found_user = await self.repo.read_by_username(username)
-        return found_user
 
     async def read_many(self, filters: UserFilter) -> list[UserResponse]:
         users = await self.repo.read_many(filters)
-        response = [UserResponse(**user._asdict()) for user in users]
+        response = [UserResponse(**dict(user)) for user in users]
         return response
+
+    async def update(self, user_id: UUID, user_update: UserUpdate) -> UserResponse:
+        updated_user = await self.repo.update(user_id, user_update)
+        response = UserResponse(**dict(updated_user))
+        return response
+
+    async def delete(self, user_id: UUID) -> None:
+        await self.repo.delete(user_id)
