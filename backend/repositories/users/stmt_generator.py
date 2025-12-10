@@ -33,5 +33,5 @@ class UserSTMTGenerator:
         return stmt
 
     def delete(self, user_id: UUID) -> Update:
-        stmt = self.update_stmt.where(User.id == user_id).values(is_active=False)
+        stmt = self.update_stmt.where(User.id == user_id, User.is_active == True).values(is_active=False)
         return stmt

@@ -4,11 +4,11 @@ from sqlalchemy import update, select
 from sqlalchemy.engine import Row
 
 from models import Ticket, User
-from .abstract_repository import Repositories
+from .abstract_repository import Repository
 from enums import TicketStatus
 
 
-class TicketRepository(Repositories):
+class TicketRepository(Repository):
     stmt = select(
         Ticket.id,
         Ticket.created_at,

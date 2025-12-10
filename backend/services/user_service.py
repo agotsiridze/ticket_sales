@@ -34,18 +34,18 @@ class UserService:#temp - removed base class
 
     async def read(self, user_id: UUID) -> UserResponse:
         found_user = await self.repo.read(user_id)
-        response = UserResponse(**dict(found_user))
+        response = UserResponse.model_validate(found_user)
         return response
 
 
     async def read_many(self, filters: UserFilter) -> list[UserResponse]:
         users = await self.repo.read_many(filters)
-        response = [UserResponse(**dict(user)) for user in users]
+        response = [UserResponse.model_validate(user) for user in users]
         return response
 
     async def update(self, user_id: UUID, user_update: UserUpdate) -> UserResponse:
         updated_user = await self.repo.update(user_id, user_update)
-        response = UserResponse(**dict(updated_user))
+        response = UserResponse.model_validate(updated_user)
         return response
 
     async def delete(self, user_id: UUID) -> None:

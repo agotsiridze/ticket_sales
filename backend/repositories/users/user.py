@@ -46,5 +46,5 @@ class UserRepository(Repository):
         async with self.uow as session:
             result = await session.execute(stmt)
             if result.rowcount < 1:
-                raise ValueError(f"User with id {user_id} not found")
+                raise ValueError(f"Active user with id {user_id} not found")
             await session.commit()

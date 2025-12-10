@@ -5,11 +5,11 @@ from sqlalchemy.engine import Row
 
 from models import Event
 from schemas import EventCreate
-from .abstract_repository import Repositories
+from .abstract_repository import Repository
 
 
 
-class EventRepository(Repositories):
+class EventRepository(Repository):
     stmt = select(
             Event.id,
             Event.created_by,
@@ -42,7 +42,7 @@ class EventRepository(Repositories):
             result = await session.execute(stmt)
             event = result.all()
             return event
-    
+
     async def read_all(self) -> Sequence[Row]:
         async with self.uow as session:
             result = await session.execute(self.stmt)
