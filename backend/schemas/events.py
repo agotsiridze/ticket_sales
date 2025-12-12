@@ -35,18 +35,19 @@ class EventsBase(BaseModel):
     is_active: bool = Field(
         True,
         description="Indicates if the event is active",
-        examples=[True] 
+        examples=[True]
+    )
+    created_by: UUID = Field(
+        ...,
+        description="ID of the user who created the event",
+        examples=["123e4567-e89b-12d3-a456-426614174000"]
     )
 
     class Config:
         from_attributes = True
 
 class EventCreate(EventsBase):
-    created_by: UUID = Field(
-        ...,
-        description="ID of the user who created the event",
-        examples=["123e4567-e89b-12d3-a456-426614174000"]
-    ) # TODO: Change to current user ID
+    pass
 
 class EventRead(EventsBase):
     id: UUID = Field(
@@ -54,13 +55,85 @@ class EventRead(EventsBase):
         description="Unique identifier for the event",
         examples=["123e4567-e89b-12d3-a456-426614174000"]
     )
-    created_by: UUID = Field(
-        ...,
-        description="ID of the user who created the event",
-        examples=["123e4567-e89b-12d3-a456-426614174000"]
-    )
+
     created_at: datetime = Field(
         ...,
         description="Date and time when the event was created",
         examples=["2025-01-01T12:00:00Z"]
+    )
+
+
+class EventFilter(BaseModel):
+    title: str | None = Field(
+        None,
+        min_length=1,
+        max_length=100,
+        description="Title of the event",
+        examples=["Tech Conference 2025"],
+    )
+    description: str | None = Field(
+        None,
+        description="Detailed description of the event",
+        examples=["Annual technology conference featuring the latest innovations"]
+    )
+    location: str | None = Field(
+        None,
+        description="Location of the event",
+        examples=["123 Tech Lane, Silicon Valley, CA"]
+    )
+    start_datetime: datetime | None = Field(
+        None,
+        description="Start date and time of the event",
+        examples=["2025-05-01T09:00:00Z"]
+    )
+    end_datetime: datetime | None = Field(
+        None,
+        description="End date and time of the event",
+        examples=["2025-05-01T17:00:00Z"]
+    )
+    created_by: UUID | None = Field(
+        None,
+        description="ID of the user who created the event",
+        examples=["123e4567-e89b-12d3-a456-426614174000"]
+    )
+
+
+class EventUpdate(BaseModel):
+    """Request body for updating event information"""
+    title: str | None = Field(
+        None,
+        min_length=1,
+        max_length=100,
+        description="Title of the event",
+        examples=["Tech Conference 2025"],
+    )
+    description: str | None = Field(
+        None,
+        description="Detailed description of the event",
+        examples=["Annual technology conference featuring the latest innovations"]
+    )
+    location: str | None = Field(
+        None,
+        description="Location of the event",
+        examples=["123 Tech Lane, Silicon Valley, CA"]
+    )
+    start_datetime: datetime | None = Field(
+        None,
+        description="Start date and time of the event",
+        examples=["2025-05-01T09:00:00Z"]
+    )
+    end_datetime: datetime | None = Field(
+        None,
+        description="End date and time of the event",
+        examples=["2025-05-01T17:00:00Z"]
+    )
+    is_ticket_available: bool | None = Field(
+        None,
+        description="Indicates if tickets are available for the event",
+        examples=[True]
+    )
+    is_active: bool | None = Field(
+        None,
+        description="Indicates if the event is active (published/draft)",
+        examples=[True]
     )

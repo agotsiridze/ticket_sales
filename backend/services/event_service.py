@@ -1,14 +1,13 @@
 from datetime import datetime
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from repositories import EventRepository
-from schemas import EventCreate, EventRead
+from schemas import EventCreate, EventRead, EventFilter, EventUpdate
 from models import Event
-from .abstract_service import Services
 
 
-class EventService(Services):
-    def __init__(self):
+class EventService:
+    def __init__(self) -> None:
         self.repo = EventRepository()
 
     async def create(self, event_data: EventCreate) -> EventRead:
@@ -29,17 +28,20 @@ class EventService(Services):
         valid_event = EventRead.model_validate(created_event)
         return valid_event
 
-    async def read_by_id(self, event_id: str) -> EventRead:
-        event = await self.repo.read_by_id(event_id)
-        response = EventRead(**event._asdict())
+    async def read(self, event_id: UUID) -> EventRead:
+        event = await self.repo.read(event_id)
+        res = EventRead.model_validate(event)
+        return res
+
+    async def read_many(self, filter: EventFilter) -> list[EventRead]:
+        events = await self.repo.read_many(filter)
+        response = [EventRead.model_validate(event) for event in events]
         return response
 
-    async def read_by_owner(self, owner_id: str) -> list[EventRead]:
-        events = await self.repo.read_by_owner(owner_id)
-        response = [EventRead(**event._asdict()) for event in events]
+    async def update(self, event_id: UUID, event_update: EventUpdate) -> EventRead:
+        event = await self.repo.update(event_id, event_update)
+        response = EventRead.model_validate(event)
         return response
-    
-    async def read_all(self) -> list[EventRead]:
-        events = await self.repo.read_all()
-        response = [EventRead(**event._asdict()) for event in events]
-        return response
+
+    async def delete(self, event_id: UUID) -> None:
+        await self.repo.delete(event_id)

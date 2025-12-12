@@ -1,24 +1,30 @@
+from uuid import UUID
+
 from fastapi import HTTPException
 
-from schemas import EventCreate
+from schemas import EventCreate, EventFilter, EventRead, EventUpdate
 from services import EventService
-from models import Event
-from .abstract_controller import Controller
 
 
-class EventController(Controller):
-    def __init__(self):
+class EventController:
+    def __init__(self) -> None:
         self.service = EventService()
 
-    async def create(self, user: EventCreate) -> Event:
-        return await self.service.create(user)
+    async def create(self, event: EventCreate) -> EventRead:
+        return await self.service.create(event)
 
-    async def read_by_id(self, user_id: str) -> Event:
-        user = await self.service.read_by_id(user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
+    async def read(self, event_id: UUID) -> EventRead:
+        event = await self.service.read(event_id)
+        if not event:
+            raise HTTPException(status_code=404, detail="event not found")
+        return event
 
-    async def read_all(self) -> list[Event]:
-        return await self.service.read_all()
+    async def read_many(self, filter: EventFilter) -> list[EventRead]:
+        return await self.service.read_many(filter)
 
+    async def update(self, event_id: UUID, event_update: EventUpdate) -> EventRead:
+        event = await self.service.update(event_id, event_update)
+        return event
+
+    async def delete(self, event_id: UUID) -> None:
+        await self.service.delete(event_id)
