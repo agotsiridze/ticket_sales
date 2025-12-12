@@ -91,6 +91,11 @@ class EventFilter(BaseModel):
         description="End date and time of the event",
         examples=["2025-05-01T17:00:00Z"]
     )
+    is_ticket_available: bool | None = Field(
+        None,
+        description="Indicates if tickets are available for the event",
+        examples=[True]
+    )
     created_by: UUID | None = Field(
         None,
         description="ID of the user who created the event",
