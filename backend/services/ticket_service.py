@@ -1,17 +1,16 @@
 from datetime import datetime
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from repositories import TicketRepository
-from schemas import TicketCreate, TicketRead
+from schemas import TicketCreate, TicketRead, TicketFilter, TicketUpdate
 from models import Ticket
-from .abstract_service import Services
 
 
-class TicketService(Services):
-    def __init__(self):
+class TicketService:
+    def __init__(self) -> None:
         self.repo = TicketRepository()
 
-    async def create(self, ticket_data: TicketCreate, event_id) -> TicketRead:
+    async def create(self, event_id: UUID, ticket_data: TicketCreate) -> TicketRead:
         _id = uuid4()
         new_ticket = Ticket(
                 id=_id,
@@ -27,12 +26,20 @@ class TicketService(Services):
         created_ticket = TicketRead.model_validate(valid_ticket)
         return created_ticket
 
-    async def read_by_id(self, ticket_id: str) -> TicketRead:
-        ticket_row = await self.repo.read_by_id(ticket_id)
-        ticket_res = TicketRead(**ticket_row._asdict())
+    async def read(self, ticket_id: UUID) -> TicketRead:
+        ticket_row = await self.repo.read(ticket_id)
+        ticket_res = TicketRead.model_validate(ticket_row)
         return ticket_res
-    
-    async def read_all(self) -> list[TicketRead]:
-        tickets = await self.repo.read_all()
-        response = [TicketRead(**ticket._asdict()) for ticket in tickets]
+
+    async def read_many(self, event_id: UUID, ticket_filter: TicketFilter) -> list[TicketRead]:
+        tickets = await self.repo.read_many(event_id, ticket_filter)
+        response = [TicketRead.model_validate(ticket) for ticket in tickets]
         return response
+
+    async def update(self, ticket_id: UUID, ticket_update: TicketUpdate) -> TicketRead:
+        updated_row = await self.repo.update(ticket_id, ticket_update)
+        updated_ticket = TicketRead.model_validate(updated_row)
+        return updated_ticket
+
+    async def delete(self, ticket_id: UUID) -> None:
+        await self.repo.delete(ticket_id)

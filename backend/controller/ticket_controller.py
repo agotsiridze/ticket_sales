@@ -1,22 +1,26 @@
-from fastapi import HTTPException
-from schemas import TicketCreate
+from uuid import UUID
+
+from schemas import TicketCreate, TicketFilter, TicketRead, TicketUpdate
 from services import TicketService
-from models import Ticket
 
 
 class TicketController:
-    def __init__(self):
+    def __init__(self) -> None:
         self.service = TicketService()
 
-    async def create(self, ticket: TicketCreate, event_id) -> Ticket:
-        return await self.service.create(ticket, event_id)
+    async def create(self, event_id: UUID, ticket: TicketCreate) -> TicketRead:
+        return await self.service.create(event_id, ticket)
 
-    async def read_by_id(self, ticket_id: str) -> Ticket:
-        user = await self.service.read_by_id(ticket_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
+    async def read(self, ticket_id: UUID) -> TicketRead:
+        ticket = await self.service.read(ticket_id)
+        return ticket
 
-    async def read_all(self) -> list[Ticket]:
-        return await self.service.read_all()
+    async def read_many(self, event_id: UUID, ticket_filter: TicketFilter) -> list[TicketRead]:
+        return await self.service.read_many(event_id, ticket_filter)
 
+    async def update(self, ticket_id: UUID, ticket_update: TicketUpdate) -> TicketRead:
+        updated_ticket = await self.service.update(ticket_id, ticket_update)
+        return updated_ticket
+
+    async def delete(self, ticket_id: UUID) -> None:
+        await self.service.delete(ticket_id)

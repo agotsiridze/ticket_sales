@@ -11,3 +11,4 @@ class TicketStatus(Enum):
     available = "available"
     reserved = "reserved"
     paid = "paid"
+    cancelled = "cancelled"

@@ -7,7 +7,7 @@ app.include_router(router_v1)
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     return {"message": "Hello World"}
 
 if __name__ == "__main__":
